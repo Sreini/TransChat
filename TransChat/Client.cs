@@ -20,24 +20,14 @@ namespace TransChat
 
         public string Name { get; set; }
 
-        public void Connect(int port, string password)
+        public void Connect(int port)
         {
             _client = new TcpClient();
             _client.Connect(IPAddress.Parse("127.0.0.1"), port);
 
-            //not sure if this should be here, I'm basically creating a new tcp client whenever I put in a wrong password 
-            if (!Verify(password))
-            {
-                //end the connection
-                Console.WriteLine("Wrong password!");
-            }
-
-
             byte[] name = Encoding.ASCII.GetBytes(Name);
             _stream = _client.GetStream();
             _stream.Write(name, 0, name.Length);
-
-
         }
 
         private bool Verify(string password)
@@ -51,18 +41,16 @@ namespace TransChat
             _stream.Write(data, 0, data.Length);
         }
 
-        public async Task Receive()
+        public void Receive()
         {
             byte[] receivedBytes = new byte[1024];
             int byteCount;
 
-            await Task.Run(() =>
+            while ((byteCount = _stream.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
             {
-                while ((byteCount = _stream.Read(receivedBytes, 0, receivedBytes.Length)) > 0)
-                {
-                    Console.Write(Encoding.ASCII.GetString(receivedBytes, 0, byteCount));
-                }
-            });
+                Console.Write(Encoding.ASCII.GetString(receivedBytes, 0, byteCount));
+            }
+            
         }
 
     }

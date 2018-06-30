@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace TransChat
 {
@@ -17,16 +19,17 @@ namespace TransChat
             {
                 Console.Write(Environment.NewLine + "username: ");
                 username = Console.ReadLine();
-            } 
-            while (string.IsNullOrWhiteSpace(username));
+            } while (string.IsNullOrWhiteSpace(username));
+
             client.Name = username.Trim();
 
-            
-            Console.Write(Environment.NewLine);
-            
 
-            Console.Write("server password: ");
-            var password = Console.ReadLine();
+            Console.Write(Environment.NewLine);
+
+            client.Connect(Port);
+
+            var thread = new Thread(()=>client.Receive());
+            thread.Start();
 
         }
     }
