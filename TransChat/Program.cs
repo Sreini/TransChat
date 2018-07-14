@@ -8,12 +8,18 @@ namespace TransChat
     {
         static void Main(string[] args)
         {
+            RunAsync().GetAwaiter().GetResult();
+
+        }
+
+        static async  Task RunAsync()
+        {
             var Port = 48750;
             var client = new Client();
 
             Console.WriteLine("Welcome to TransChat! Please enter your username.");
 
-            //get username
+            //send username
             string username;
             do
             {
@@ -23,14 +29,11 @@ namespace TransChat
 
             client.Name = username.Trim();
 
-
             Console.Write(Environment.NewLine);
 
             client.Connect(Port);
 
-            var thread = new Thread(()=>client.Receive());
-            thread.Start();
-
+            await client.Receive();
         }
     }
 }
